@@ -28,140 +28,42 @@ INSERT INTO industries (name_industries) VALUES
 ('Творчество, спорт, развлечение и отдых'),
 ('Предоставление прочих видов услуг');
 
-DROP TABLE IF EXISTS domestic_goods;
-
-CREATE TABLE domestic_goods (
-	id_industries int NOT NULL,
-	supply_volume_industries_1 int DEFAULT 0,
-	supply_volume_industries_2 int DEFAULT 0,
-	supply_volume_industries_3 int DEFAULT 0,
-	supply_volume_industries_4 int DEFAULT 0,
-	supply_volume_industries_5 int DEFAULT 0,
-	supply_volume_industries_6 int DEFAULT 0,
-	supply_volume_industries_7 int DEFAULT 0,
-	supply_volume_industries_8 int DEFAULT 0,
-	supply_volume_industries_9 int DEFAULT 0,
-	supply_volume_industries_10 int DEFAULT 0,
-	supply_volume_industries_11 int DEFAULT 0,
-	supply_volume_industries_12 int DEFAULT 0,
-	supply_volume_industries_13 int DEFAULT 0,
-	supply_volume_industries_14 int DEFAULT 0,
-	supply_volume_industries_15 int DEFAULT 0,
-	supply_volume_industries_16 int DEFAULT 0,
-	supply_volume_industries_17 int DEFAULT 0,
-	supply_volume_industries_18 int DEFAULT 0,
-	supply_volume_industries_19 int DEFAULT 0,
+CREATE OR REPLACE FUNCTION start_tables(VARIADIC table_names text[]) RETURNS void AS $$
+DECLARE 
+	newtable text;
+BEGIN
+	FOREACH newtable IN ARRAY table_names
+	LOOP
+		DROP TABLE IF EXISTS newtable;
+		CREATE TABLE newtable (
+			id_industries int NOT NULL,
+			supply_volume_industries_1 real,
+			supply_volume_industries_2 real,
+			supply_volume_industries_3 real,
+			supply_volume_industries_4 real,
+			supply_volume_industries_5 real,
+			supply_volume_industries_6 real,
+			supply_volume_industries_7 real,
+			supply_volume_industries_8 real,
+			supply_volume_industries_9 real,
+			supply_volume_industries_10 real,
+			supply_volume_industries_11 real,
+			supply_volume_industries_12 real,
+			supply_volume_industries_13 real,
+			supply_volume_industries_14 real,
+			supply_volume_industries_15 real,
+			supply_volume_industries_16 real,
+			supply_volume_industries_17 real,
+			supply_volume_industries_18 real,
+			supply_volume_industries_19 real,
 	
-	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
-);
+			CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
+		);
+	END LOOP;
+END;
+$$ LANGUAGE PLPGSQL;
 
-DROP TABLE IF EXISTS imported_goods;
-
-CREATE TABLE imported_goods (
-	id_industries int NOT NULL,
-	supply_volume_industries_1 int DEFAULT 0,
-	supply_volume_industries_2 int DEFAULT 0,
-	supply_volume_industries_3 int DEFAULT 0,
-	supply_volume_industries_4 int DEFAULT 0,
-	supply_volume_industries_5 int DEFAULT 0,
-	supply_volume_industries_6 int DEFAULT 0,
-	supply_volume_industries_7 int DEFAULT 0,
-	supply_volume_industries_8 int DEFAULT 0,
-	supply_volume_industries_9 int DEFAULT 0,
-	supply_volume_industries_10 int DEFAULT 0,
-	supply_volume_industries_11 int DEFAULT 0,
-	supply_volume_industries_12 int DEFAULT 0,
-	supply_volume_industries_13 int DEFAULT 0,
-	supply_volume_industries_14 int DEFAULT 0,
-	supply_volume_industries_15 int DEFAULT 0,
-	supply_volume_industries_16 int DEFAULT 0,
-	supply_volume_industries_17 int DEFAULT 0,
-	supply_volume_industries_18 int DEFAULT 0,
-	supply_volume_industries_19 int DEFAULT 0,
-	
-	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
-);
-
-DROP TABLE IF EXISTS transport_margins;
-
-CREATE TABLE transport_margins (
-	id_industries int NOT NULL,
-	supply_volume_industries_1 int DEFAULT 0,
-	supply_volume_industries_2 int DEFAULT 0,
-	supply_volume_industries_3 int DEFAULT 0,
-	supply_volume_industries_4 int DEFAULT 0,
-	supply_volume_industries_5 int DEFAULT 0,
-	supply_volume_industries_6 int DEFAULT 0,
-	supply_volume_industries_7 int DEFAULT 0,
-	supply_volume_industries_8 int DEFAULT 0,
-	supply_volume_industries_9 int DEFAULT 0,
-	supply_volume_industries_10 int DEFAULT 0,
-	supply_volume_industries_11 int DEFAULT 0,
-	supply_volume_industries_12 int DEFAULT 0,
-	supply_volume_industries_13 int DEFAULT 0,
-	supply_volume_industries_14 int DEFAULT 0,
-	supply_volume_industries_15 int DEFAULT 0,
-	supply_volume_industries_16 int DEFAULT 0,
-	supply_volume_industries_17 int DEFAULT 0,
-	supply_volume_industries_18 int DEFAULT 0,
-	supply_volume_industries_19 int DEFAULT 0,
-	
-	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
-);
-
-DROP TABLE IF EXISTS trading_margins;
-
-CREATE TABLE trading_margins (
-	id_industries int NOT NULL,
-	supply_volume_industries_1 int DEFAULT 0,
-	supply_volume_industries_2 int DEFAULT 0,
-	supply_volume_industries_3 int DEFAULT 0,
-	supply_volume_industries_4 int DEFAULT 0,
-	supply_volume_industries_5 int DEFAULT 0,
-	supply_volume_industries_6 int DEFAULT 0,
-	supply_volume_industries_7 int DEFAULT 0,
-	supply_volume_industries_8 int DEFAULT 0,
-	supply_volume_industries_9 int DEFAULT 0,
-	supply_volume_industries_10 int DEFAULT 0,
-	supply_volume_industries_11 int DEFAULT 0,
-	supply_volume_industries_12 int DEFAULT 0,
-	supply_volume_industries_13 int DEFAULT 0,
-	supply_volume_industries_14 int DEFAULT 0,
-	supply_volume_industries_15 int DEFAULT 0,
-	supply_volume_industries_16 int DEFAULT 0,
-	supply_volume_industries_17 int DEFAULT 0,
-	supply_volume_industries_18 int DEFAULT 0,
-	supply_volume_industries_19 int DEFAULT 0,
-	
-	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
-);
-
-DROP TABLE IF EXISTS taxes;
-
-CREATE TABLE taxes (
-	id_industries int NOT NULL,
-	supply_volume_industries_1 int,
-	supply_volume_industries_2 int,
-	supply_volume_industries_3 int,
-	supply_volume_industries_4 int,
-	supply_volume_industries_5 int,
-	supply_volume_industries_6 int,
-	supply_volume_industries_7 int,
-	supply_volume_industries_8 int,
-	supply_volume_industries_9 int,
-	supply_volume_industries_10 int,
-	supply_volume_industries_11 int,
-	supply_volume_industries_12 int,
-	supply_volume_industries_13 int,
-	supply_volume_industries_14 int,
-	supply_volume_industries_15 int,
-	supply_volume_industries_16 int,
-	supply_volume_industries_17 int,
-	supply_volume_industries_18 int,
-	supply_volume_industries_19 int,
-	
-	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
-);
+SELECT start_tables('domestic_goods', 'imported_goods', 'transport_margins', 'trading_margins', 'taxes');
 
 INSERT INTO domestic_goods VALUES
 (1, 7028668, 119, 10163815, 277529, 498, 48530, 35846, 2499, 1952, 245, 5306, 8789, 1849, 11661, 53961, 3143, 31789, 7833, 79745),
