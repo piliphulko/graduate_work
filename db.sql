@@ -120,3 +120,30 @@ INSERT INTO costs_release VALUES
 (19, 'налоги', 200, 39, 1336, 181, 40, 671, 1275, 606, 158, 666, 222, 123, 510, 99, 280, 186, 721, 694, -42);
 
 SELECT * FROM costs_release;
+
+DROP VIEW IF EXISTS test_view;
+
+CREATE OR REPLACE VIEW test_view AS
+SELECT type_costs, sum(supply_volume_industries_1) AS supply_volume_industries_1, 
+sum(supply_volume_industries_2) AS supply_volume_industries_2,
+sum(supply_volume_industries_3) AS supply_volume_industries_3,
+sum(supply_volume_industries_4) AS supply_volume_industries_4,
+sum(supply_volume_industries_5) AS supply_volume_industries_5,
+sum(supply_volume_industries_6) AS supply_volume_industries_6,
+sum(supply_volume_industries_7) AS supply_volume_industries_7,
+sum(supply_volume_industries_8) AS supply_volume_industries_8,
+sum(supply_volume_industries_9) AS supply_volume_industries_9,
+sum(supply_volume_industries_10) AS supply_volume_industries_10,
+sum(supply_volume_industries_11) AS supply_volume_industries_11,
+sum(supply_volume_industries_12) AS supply_volume_industries_12,
+sum(supply_volume_industries_13) AS supply_volume_industries_13,
+sum(supply_volume_industries_14) AS supply_volume_industries_14,
+sum(supply_volume_industries_15) AS supply_volume_industries_15,
+sum(supply_volume_industries_16) AS supply_volume_industries_16,
+sum(supply_volume_industries_17) AS supply_volume_industries_17,
+sum(supply_volume_industries_18) AS supply_volume_industries_18,
+sum(supply_volume_industries_19) AS supply_volume_industries_19
+FROM costs_release
+GROUP BY type_costs;
+
+SELECT * FROM test_view;
