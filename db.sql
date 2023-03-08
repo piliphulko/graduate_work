@@ -162,4 +162,16 @@ sum(supply_volume_industries_19) AS supply_volume_industries_19
 FROM costs_release
 GROUP BY type_costs;
 
-SELECT * FROM test_view;
+CREATE OR REPLACE VIEW test_view_gdp AS
+SELECT sum(supply_volume_industries_1 + supply_volume_industries_2 +
+		  supply_volume_industries_3 + supply_volume_industries_4 +
+		  supply_volume_industries_5 + supply_volume_industries_6 +
+		  supply_volume_industries_7 + supply_volume_industries_8 +
+		  supply_volume_industries_9 + supply_volume_industries_10 +
+		  supply_volume_industries_11 + supply_volume_industries_12 +
+		  supply_volume_industries_13 + supply_volume_industries_14 +
+		  supply_volume_industries_15 + supply_volume_industries_16 +
+		  supply_volume_industries_17 + supply_volume_industries_18 +
+		  supply_volume_industries_19) AS gdp FROM test_view;
+
+SELECT * FROM test_view_gdp;
