@@ -135,10 +135,6 @@ INSERT INTO costs_release VALUES
 (20, 'потребление основного капитала', 1408327, 362795, 3980398, 1343797, 231128, 488081, 897689, 2335327, 150653, 763884, 216416, 3150264, 319447, 193316, 609807, 360432, 598519, 208964, 48574),
 (20, 'чистая прибыль и смешанный доход', 4588241, 528, 12382822, 803716, 103488, 3432577, 4730838, 934853, -50881, 2341066, 1932316, 5130119, 993426, 601341, 359, 338885, 53097, 27302, 392961);
 
-SELECT * FROM costs_release;
-
-DROP VIEW IF EXISTS test_view;
-
 CREATE OR REPLACE VIEW test_view AS
 SELECT type_costs, sum(supply_volume_industries_1) AS supply_volume_industries_1, 
 sum(supply_volume_industries_2) AS supply_volume_industries_2,
@@ -163,15 +159,82 @@ FROM costs_release
 GROUP BY type_costs;
 
 CREATE OR REPLACE VIEW test_view_gdp AS
-SELECT sum(supply_volume_industries_1 + supply_volume_industries_2 +
-		  supply_volume_industries_3 + supply_volume_industries_4 +
-		  supply_volume_industries_5 + supply_volume_industries_6 +
-		  supply_volume_industries_7 + supply_volume_industries_8 +
-		  supply_volume_industries_9 + supply_volume_industries_10 +
-		  supply_volume_industries_11 + supply_volume_industries_12 +
-		  supply_volume_industries_13 + supply_volume_industries_14 +
-		  supply_volume_industries_15 + supply_volume_industries_16 +
-		  supply_volume_industries_17 + supply_volume_industries_18 +
-		  supply_volume_industries_19) AS gdp FROM test_view;
+SELECT sum(supply_volume_industries_1) AS supply_volume_industries_1, 
+sum(supply_volume_industries_2) AS supply_volume_industries_2,
+sum(supply_volume_industries_3) AS supply_volume_industries_3,
+sum(supply_volume_industries_4) AS supply_volume_industries_4,
+sum(supply_volume_industries_5) AS supply_volume_industries_5,
+sum(supply_volume_industries_6) AS supply_volume_industries_6,
+sum(supply_volume_industries_7) AS supply_volume_industries_7,
+sum(supply_volume_industries_8) AS supply_volume_industries_8,
+sum(supply_volume_industries_9) AS supply_volume_industries_9,
+sum(supply_volume_industries_10) AS supply_volume_industries_10,
+sum(supply_volume_industries_11) AS supply_volume_industries_11,
+sum(supply_volume_industries_12) AS supply_volume_industries_12,
+sum(supply_volume_industries_13) AS supply_volume_industries_13,
+sum(supply_volume_industries_14) AS supply_volume_industries_14,
+sum(supply_volume_industries_15) AS supply_volume_industries_15,
+sum(supply_volume_industries_16) AS supply_volume_industries_16,
+sum(supply_volume_industries_17) AS supply_volume_industries_17,
+sum(supply_volume_industries_18) AS supply_volume_industries_18,
+sum(supply_volume_industries_19) AS supply_volume_industries_19
+FROM test_view;
 
 SELECT * FROM test_view_gdp;
+
+CREATE OR REPLACE FUNCTION change_Uj(varchar, real) RETURNS varchar AS
+$BODY$BEGIN
+EXECUTE '
+UPDATE costs_release                
+SET '||$1||' = '||$1||'/'||$2||';               
+';
+RETURN 'ok';
+END;$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE TYPE rs AS (Uj real, Uj_name varchar);
+
+CREATE OR REPLACE FUNCTION table_indexing() RETURNS varchar AS $$
+DECLARE
+	U1 real = (SELECT supply_volume_industries_1 FROM test_view_gdp);
+	U2 real = (SELECT supply_volume_industries_2 FROM test_view_gdp);
+	U3 real = (SELECT supply_volume_industries_3 FROM test_view_gdp);
+	U4 real = (SELECT supply_volume_industries_4 FROM test_view_gdp);
+	U5 real = (SELECT supply_volume_industries_5 FROM test_view_gdp);
+	U6 real = (SELECT supply_volume_industries_6 FROM test_view_gdp);
+	U7 real = (SELECT supply_volume_industries_7 FROM test_view_gdp);
+	U8 real = (SELECT supply_volume_industries_8 FROM test_view_gdp);
+	U9 real = (SELECT supply_volume_industries_9 FROM test_view_gdp);
+	U10 real = (SELECT supply_volume_industries_10 FROM test_view_gdp);
+	U11 real = (SELECT supply_volume_industries_11 FROM test_view_gdp);
+	U12 real = (SELECT supply_volume_industries_12 FROM test_view_gdp);
+	U13 real = (SELECT supply_volume_industries_13 FROM test_view_gdp);
+	U14 real = (SELECT supply_volume_industries_14 FROM test_view_gdp);
+	U15 real = (SELECT supply_volume_industries_15 FROM test_view_gdp);
+	U16 real = (SELECT supply_volume_industries_16 FROM test_view_gdp);
+	U17 real = (SELECT supply_volume_industries_17 FROM test_view_gdp);
+	U18 real = (SELECT supply_volume_industries_18 FROM test_view_gdp);
+	U19 real = (SELECT supply_volume_industries_19 FROM test_view_gdp);
+	arrayUj rs[] = ARRAY[(U1, 'supply_volume_industries_1'), (U2, 'supply_volume_industries_2'),
+						  (U3, 'supply_volume_industries_3'), (U4, 'supply_volume_industries_4'),
+						  (U5, 'supply_volume_industries_5'), (U6, 'supply_volume_industries_6'),
+						  (U7, 'supply_volume_industries_7'), (U8, 'supply_volume_industries_8'),
+						  (U9, 'supply_volume_industries_9'), (U10, 'supply_volume_industries_10'),
+						  (U11, 'supply_volume_industries_11'), (U12, 'supply_volume_industries_12'),
+						  (U13, 'supply_volume_industries_13'), (U14, 'supply_volume_industries_14'),
+						  (U15, 'supply_volume_industries_15'), (U16, 'supply_volume_industries_16'),
+						  (U17, 'supply_volume_industries_17'), (U18, 'supply_volume_industries_18'),
+						  (U19, 'supply_volume_industries_19')];
+	Uj real;
+	Uj_name text;
+BEGIN
+	FOREACH Uj, Uj_name IN ARRAY arrayUj
+	LOOP
+		PERFORM change_Uj(Uj_name, Uj);
+	END LOOP;
+	RETURN 'ok';
+END; 
+$$ LANGUAGE PLPGSQL;
+
+SELECT * FROM table_indexing();
+
