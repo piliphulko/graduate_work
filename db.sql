@@ -238,3 +238,59 @@ $$ LANGUAGE PLPGSQL;
 
 SELECT * FROM table_indexing();
 
+DROP FUNCTION shok_price;
+
+CREATE OR REPLACE FUNCTION shok_price
+(IN type_costs_v varchar, IN id_industries_v integer, IN index_price real)
+RETURNS TABLE(U1 real, U2 real, U3 real, U4 real, U5 real, U6 real, U7 real, U8 real, U9 real, U10 real,
+				   U11 real, U12 real, U13 real, U14 real, U15 real, U16 real, U17 real, U18 real, U19 real) AS $$
+BEGIN
+DROP TABLE IF EXISTS temporarily;
+CREATE TABLE temporarily AS TABLE costs_release;
+UPDATE temporarily
+SET supply_volume_industries_1 = supply_volume_industries_1*index_price,
+	supply_volume_industries_2 = supply_volume_industries_2*index_price,
+	supply_volume_industries_3 = supply_volume_industries_3*index_price,
+	supply_volume_industries_4 = supply_volume_industries_4*index_price,
+	supply_volume_industries_5 = supply_volume_industries_5*index_price,
+	supply_volume_industries_6 = supply_volume_industries_6*index_price,
+	supply_volume_industries_7 = supply_volume_industries_7*index_price,
+	supply_volume_industries_8 = supply_volume_industries_8*index_price,
+	supply_volume_industries_9 = supply_volume_industries_9*index_price,
+	supply_volume_industries_10 = supply_volume_industries_10*index_price,
+	supply_volume_industries_11 = supply_volume_industries_11*index_price,
+	supply_volume_industries_12 = supply_volume_industries_12*index_price,
+	supply_volume_industries_13 = supply_volume_industries_13*index_price,
+	supply_volume_industries_14 = supply_volume_industries_14*index_price,
+	supply_volume_industries_15 = supply_volume_industries_15*index_price,
+	supply_volume_industries_16 = supply_volume_industries_16*index_price,
+	supply_volume_industries_17 = supply_volume_industries_17*index_price,
+	supply_volume_industries_18 = supply_volume_industries_18*index_price,
+	supply_volume_industries_19 = supply_volume_industries_19*index_price
+WHERE type_costs = type_costs_v::cost_type AND "id_industries" = id_industries_v;
+RETURN QUERY
+SELECT sum(supply_volume_industries_1) AS supply_volume_industries_1, 
+sum(supply_volume_industries_2) AS supply_volume_industries_2,
+sum(supply_volume_industries_3) AS supply_volume_industries_3,
+sum(supply_volume_industries_4) AS supply_volume_industries_4,
+sum(supply_volume_industries_5) AS supply_volume_industries_5,
+sum(supply_volume_industries_6) AS supply_volume_industries_6,
+sum(supply_volume_industries_7) AS supply_volume_industries_7,
+sum(supply_volume_industries_8) AS supply_volume_industries_8,
+sum(supply_volume_industries_9) AS supply_volume_industries_9,
+sum(supply_volume_industries_10) AS supply_volume_industries_10,
+sum(supply_volume_industries_11) AS supply_volume_industries_11,
+sum(supply_volume_industries_12) AS supply_volume_industries_12,
+sum(supply_volume_industries_13) AS supply_volume_industries_13,
+sum(supply_volume_industries_14) AS supply_volume_industries_14,
+sum(supply_volume_industries_15) AS supply_volume_industries_15,
+sum(supply_volume_industries_16) AS supply_volume_industries_16,
+sum(supply_volume_industries_17) AS supply_volume_industries_17,
+sum(supply_volume_industries_18) AS supply_volume_industries_18,
+sum(supply_volume_industries_19) AS supply_volume_industries_19
+FROM temporarily;
+DROP TABLE IF EXISTS temporarily;
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT * FROM shok_price('отечественные товары/услуги', 2, 100);
