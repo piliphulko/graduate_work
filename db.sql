@@ -219,6 +219,8 @@ $$ LANGuAGE PLPGSQL;
 
 SELECT * FROM shok_price('импортные товары/услуги', 0, 1.01);
 
+DROP TABLE weight_deflator
+
 CREATE TYPE ipk AS ENUM ('веса ipc', 'веса ipi', 'веса ipp');
 
 CREATE TABLE weight_deflator
@@ -274,6 +276,8 @@ CREATE OR REPLACE FUNCTION take_ipc_weight(integer, varchar) RETURNS real AS $$
 	FROM costs_release
 	WHERE "id_industries" = $1 AND type_costs = $2::cost_type;
 $$ LANGUAGE SQL;
+
+SELECT take_ipc_weight(1, 'импортные товары/услуги');
 	
 CREATE OR REPLACE FUNCTION insert_ipc_weight_industrie
 (id_industrie integer) RETURNS varchar AS $$
@@ -290,10 +294,31 @@ RETURN 'ok';
 END;
 $$ LANGUAGE PLPGSQL;
 
-DO $$
+CREATE OR REPLACE FUNCTION insert_ipc() RETURNS varchar AS $$
 BEGIN
 	FOR i IN 1..19
 	LOOP
 		PERFORM insert_ipc_weight_industrie(i);
 	END LOOP;
-END $$;
+	UPDATE weight_deflator SET x=0 WHERE x IS NULL;
+	UPDATE weight_deflator SET y=0 WHERE y IS NULL;
+	UPDATE weight_deflator SET r=0 WHERE r IS NULL;
+	UPDATE weight_deflator SET s=0 WHERE s IS NULL;
+	UPDATE weight_deflator SET t=0 WHERE t IS NULL;
+
+RETURN 'ok';
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT insert_ipc();
+
+CREATE OR REPLACE FUNCTION take_k(ip_k varchar) RETURNS real AS $$
+SELECT sum(x + y + r + s + t)
+FROM weight_deflator
+WHERE "weight_ipk" = ip_k::ipk;
+$$ LANGUAGE SQL;
+
+SELECT sum(x+y+r+s+t) FROM weight_deflator
+
+SELECT sum(u1 + u2 + u3 + u4 + u5 + u6 + u7 + u8 + u9 + u10 + u11 + u12 + u13 + u14 + u15 + u16 + u17 + u18 + u19) FROM costs_release
+WHERE id_industries BETWEEN 1 AND 19;
