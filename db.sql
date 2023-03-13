@@ -1,5 +1,5 @@
 CREATE TYPE cost_type AS 
-	ENuM ('отечественные товары/услуги', 'импортные товары/услуги',
+	ENUM ('отечественные товары/услуги', 'импортные товары/услуги',
 	'транспортные наценки', 'торговые наценки', 'налоги',
 	'оплата труда работников', 'другие налоги на производство',
 	'другие субсидии на производство', 'потребление основного капитала',
@@ -13,12 +13,12 @@ CREATE TABLE industries (
 );
 
 CREATE TABLE costs_release (
-	id_industries int NOT NuLL,
+	id_industries int NOT NULL,
 	type_costs cost_type, 
-	u1 real, u2 real, u3 real, u4 real, u5 real,
-	u6 real, u7 real, u8 real, u9 real, u10 real,
-	u11 real, u12 real, u13 real, u14 real, u15 real,
-	u16 real, u17 real, u18 real, u19 real,
+	U1 real, U2 real, U3 real, U4 real, U5 real,
+	U6 real, U7 real, U8 real, U9 real, U10 real,
+	U11 real, U12 real, U13 real, U14 real, U15 real,
+	U16 real, U17 real, U18 real, U19 real,
 
 	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
 );
@@ -116,15 +116,15 @@ INSERT INTO costs_release VALUES
 
 CREATE OR REPLACE VIEW costs_release_group AS
 SELECT type_costs,
-	sum(u1) AS u1, sum(u2) AS u2, sum(u3) AS u3, sum(u4) AS u4,
-	sum(u5) AS u5, sum(u6) AS u6, sum(u7) AS u7, sum(u8) AS u8,
-	sum(u9) AS u9, sum(u10) AS u10, sum(u11) AS u11, sum(u12) AS u12,
-	sum(u13) AS u13, sum(u14) AS u14, sum(u15) AS u15, sum(u16) AS u16,
-	sum(u17) AS u17, sum(u18) AS u18, sum(u19) AS u19
+	sum(U1) AS U1, sum(U2) AS U2, sum(U3) AS U3, sum(U4) AS U4,
+	sum(U5) AS U5, sum(U6) AS U6, sum(U7) AS U7, sum(U8) AS U8,
+	sum(U9) AS U9, sum(U10) AS U10, sum(U11) AS U11, sum(U12) AS U12,
+	sum(U13) AS U13, sum(U14) AS U14, sum(U15) AS U15, sum(U16) AS U16,
+	sum(U17) AS U17, sum(U18) AS U18, sum(U19) AS U19
 FROM costs_release
 GROUP BY type_costs;
 
-CREATE OR REPLACE FUNCTION change_uj(varchar, varchar, real) RETURNS varchar AS
+CREATE OR REPLACE FUNCTION change_Uj(varchar, varchar, real) RETURNS varchar AS
 $BODY$BEGIN
 EXECUTE '
 UPDATE '||$1||'                
@@ -134,41 +134,41 @@ RETURN 'ok';
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TYPE u_sum_name AS (uj real, uj_name varchar);
+CREATE TYPE U_sum_name AS (Uj real, Uj_name varchar);
 
 CREATE OR REPLACE FUNCTION table_indexing() RETURNS varchar AS $$
 DECLARE
-	sum_u1 real = (SELECT sum(u1) FROM costs_release_group);
-	sum_u2 real = (SELECT sum(u2) FROM costs_release_group);
-	sum_u3 real = (SELECT sum(u3) FROM costs_release_group);
-	sum_u4 real = (SELECT sum(u4) FROM costs_release_group);
-	sum_u5 real = (SELECT sum(u5) FROM costs_release_group);
-	sum_u6 real = (SELECT sum(u6) FROM costs_release_group);
-	sum_u7 real = (SELECT sum(u7) FROM costs_release_group);
-	sum_u8 real = (SELECT sum(u8) FROM costs_release_group);
-	sum_u9 real = (SELECT sum(u9) FROM costs_release_group);
-	sum_u10 real = (SELECT sum(u10) FROM costs_release_group);
-	sum_u11 real = (SELECT sum(u11) FROM costs_release_group);
-	sum_u12 real = (SELECT sum(u12) FROM costs_release_group);
-	sum_u13 real = (SELECT sum(u13) FROM costs_release_group);
-	sum_u14 real = (SELECT sum(u14) FROM costs_release_group);
-	sum_u15 real = (SELECT sum(u15) FROM costs_release_group);
-	sum_u16 real = (SELECT sum(u16) FROM costs_release_group);
-	sum_u17 real = (SELECT sum(u17) FROM costs_release_group);
-	sum_u18 real = (SELECT sum(u18) FROM costs_release_group);
-	sum_u19 real = (SELECT sum(u19) FROM costs_release_group);
-	arrayuj u_sum_name[] = ARRAY[(sum_u1, 'u1'), (sum_u2, 'u2'), (sum_u3, 'u3'), (sum_u4, 'u4'),
-		(sum_u5, 'u5'), (sum_u6, 'u6'), (sum_u7, 'u7'), (sum_u8, 'u8'), (sum_u9, 'u9'), 
-		(sum_u10, 'u10'), (sum_u11, 'u11'), (sum_u12, 'u12'), (sum_u13, 'u13'), 
-		(sum_u14, 'u14'), (sum_u15, 'u15'), (sum_u16, 'u16'), (sum_u17, 'u17'), 
-		(sum_u18, 'u18'), (sum_u19, 'u19')];
-	sum_uj real;
-	uj_name text;
+	sum_U1 real = (SELECT sum(U1) FROM costs_release_group);
+	sum_U2 real = (SELECT sum(U2) FROM costs_release_group);
+	sum_U3 real = (SELECT sum(U3) FROM costs_release_group);
+	sum_U4 real = (SELECT sum(U4) FROM costs_release_group);
+	sum_U5 real = (SELECT sum(U5) FROM costs_release_group);
+	sum_U6 real = (SELECT sum(U6) FROM costs_release_group);
+	sum_U7 real = (SELECT sum(U7) FROM costs_release_group);
+	sum_U8 real = (SELECT sum(U8) FROM costs_release_group);
+	sum_U9 real = (SELECT sum(U9) FROM costs_release_group);
+	sum_U10 real = (SELECT sum(U10) FROM costs_release_group);
+	sum_U11 real = (SELECT sum(U11) FROM costs_release_group);
+	sum_U12 real = (SELECT sum(U12) FROM costs_release_group);
+	sum_U13 real = (SELECT sum(U13) FROM costs_release_group);
+	sum_U14 real = (SELECT sum(U14) FROM costs_release_group);
+	sum_U15 real = (SELECT sum(U15) FROM costs_release_group);
+	sum_U16 real = (SELECT sum(U16) FROM costs_release_group);
+	sum_U17 real = (SELECT sum(U17) FROM costs_release_group);
+	sum_U18 real = (SELECT sum(U18) FROM costs_release_group);
+	sum_U19 real = (SELECT sum(U19) FROM costs_release_group);
+	arrayUj U_sum_name[] = ARRAY[(sum_U1, 'U1'), (sum_U2, 'U2'), (sum_U3, 'U3'), (sum_U4, 'U4'),
+		(sum_U5, 'U5'), (sum_U6, 'U6'), (sum_U7, 'U7'), (sum_U8, 'U8'), (sum_U9, 'U9'), 
+		(sum_U10, 'U10'), (sum_U11, 'U11'), (sum_U12, 'U12'), (sum_U13, 'U13'), 
+		(sum_U14, 'U14'), (sum_U15, 'U15'), (sum_U16, 'U16'), (sum_U17, 'U17'), 
+		(sum_U18, 'U18'), (sum_U19, 'U19')];
+	sum_Uj real;
+	Uj_name text;
 BEGIN
 	CREATE TABLE costs_release_index AS TABLE costs_release;
-	FOREACH sum_uj, uj_name IN ARRAY arrayuj
+	FOREACH sum_Uj, Uj_name IN ARRAY arrayUj
 	LOOP
-		PERFORM change_uj('costs_release_index', uj_name, sum_uj);
+		PERFORM change_Uj('costs_release_index', Uj_name, sum_Uj);
 	END LOOP; 
 	RETURN 'Table name: costs_release_index';
 END; 
@@ -183,6 +183,17 @@ RETURNS TABLE(iu1 real, iu2 real, iu3 real, iu4 real, iu5 real, iu6 real, iu7 re
 BEGIN
 DROP TABLE IF EXISTS temporarily;
 CREATE TABLE temporarily AS TABLE costs_release_index;
+IF id_industries_v = 0 THEN
+UPDATE temporarily
+SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
+	u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
+	u7 = u7*index_price, u8 = u8*index_price, u9 = u9*index_price,
+	u10 = u10*index_price, u11 = u11*index_price, u12 = u12*index_price,
+	u13 = u13*index_price, u14 = u14*index_price, u15 = u15*index_price,
+	u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
+	u19 = u19*index_price
+WHERE type_costs = type_costs_v::cost_type;
+ELSE
 UPDATE temporarily
 SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
 	u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
@@ -192,6 +203,7 @@ SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
 	u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
 	u19 = u19*index_price
 WHERE type_costs = type_costs_v::cost_type AND "id_industries" = id_industries_v;
+END IF;
 RETURN QUERY
 SELECT sum(u1) AS iu1, sum(u2) AS iu2, sum(u3) AS iu3,
 	sum(u4) AS iu4, sum(u5) AS iu5, sum(u6) AS iu6,
@@ -203,6 +215,6 @@ SELECT sum(u1) AS iu1, sum(u2) AS iu2, sum(u3) AS iu3,
 FROM temporarily;
 DROP TABLE IF EXISTS temporarily;
 END;
-$$ LANGUAGE PLPGSQL;
+$$ LANGuAGE PLPGSQL;
 
-SELECT * FROM shok_price('отечественные товары/услуги', 2, 100);
+SELECT * FROM shok_price('импортные товары/услуги', 0, 1.01);
