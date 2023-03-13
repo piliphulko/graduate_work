@@ -1,11 +1,5 @@
-DROP TABLE IF EXISTS industries CASCADE;
-
-DROP TABLE IF EXISTS costs_release CASCADE;
-
-DROP TYPE cost_type;
-
 CREATE TYPE cost_type AS 
-	ENUM ('отечественные товары/услуги', 'импортные товары/услуги',
+	ENuM ('отечественные товары/услуги', 'импортные товары/услуги',
 	'транспортные наценки', 'торговые наценки', 'налоги',
 	'оплата труда работников', 'другие налоги на производство',
 	'другие субсидии на производство', 'потребление основного капитала',
@@ -19,27 +13,12 @@ CREATE TABLE industries (
 );
 
 CREATE TABLE costs_release (
-	id_industries int NOT NULL,
-	type_costs cost_type,
-	supply_volume_industries_1 real,
-	supply_volume_industries_2 real,
-	supply_volume_industries_3 real,
-	supply_volume_industries_4 real,
-	supply_volume_industries_5 real,
-	supply_volume_industries_6 real,
-	supply_volume_industries_7 real,
-	supply_volume_industries_8 real,
-	supply_volume_industries_9 real,
-	supply_volume_industries_10 real,
-	supply_volume_industries_11 real,
-	supply_volume_industries_12 real,
-	supply_volume_industries_13 real,
-	supply_volume_industries_14 real,
-	supply_volume_industries_15 real,
-	supply_volume_industries_16 real,
-	supply_volume_industries_17 real,
-	supply_volume_industries_18 real,
-	supply_volume_industries_19 real,
+	id_industries int NOT NuLL,
+	type_costs cost_type, 
+	u1 real, u2 real, u3 real, u4 real, u5 real,
+	u6 real, u7 real, u8 real, u9 real, u10 real,
+	u11 real, u12 real, u13 real, u14 real, u15 real,
+	u16 real, u17 real, u18 real, u19 real,
 
 	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
 );
@@ -135,159 +114,92 @@ INSERT INTO costs_release VALUES
 (20, 'потребление основного капитала', 1408327, 362795, 3980398, 1343797, 231128, 488081, 897689, 2335327, 150653, 763884, 216416, 3150264, 319447, 193316, 609807, 360432, 598519, 208964, 48574),
 (20, 'чистая прибыль и смешанный доход', 4588241, 528, 12382822, 803716, 103488, 3432577, 4730838, 934853, -50881, 2341066, 1932316, 5130119, 993426, 601341, 359, 338885, 53097, 27302, 392961);
 
-CREATE OR REPLACE VIEW test_view AS
-SELECT type_costs, sum(supply_volume_industries_1) AS supply_volume_industries_1, 
-sum(supply_volume_industries_2) AS supply_volume_industries_2,
-sum(supply_volume_industries_3) AS supply_volume_industries_3,
-sum(supply_volume_industries_4) AS supply_volume_industries_4,
-sum(supply_volume_industries_5) AS supply_volume_industries_5,
-sum(supply_volume_industries_6) AS supply_volume_industries_6,
-sum(supply_volume_industries_7) AS supply_volume_industries_7,
-sum(supply_volume_industries_8) AS supply_volume_industries_8,
-sum(supply_volume_industries_9) AS supply_volume_industries_9,
-sum(supply_volume_industries_10) AS supply_volume_industries_10,
-sum(supply_volume_industries_11) AS supply_volume_industries_11,
-sum(supply_volume_industries_12) AS supply_volume_industries_12,
-sum(supply_volume_industries_13) AS supply_volume_industries_13,
-sum(supply_volume_industries_14) AS supply_volume_industries_14,
-sum(supply_volume_industries_15) AS supply_volume_industries_15,
-sum(supply_volume_industries_16) AS supply_volume_industries_16,
-sum(supply_volume_industries_17) AS supply_volume_industries_17,
-sum(supply_volume_industries_18) AS supply_volume_industries_18,
-sum(supply_volume_industries_19) AS supply_volume_industries_19
+CREATE OR REPLACE VIEW costs_release_group AS
+SELECT type_costs,
+	sum(u1) AS u1, sum(u2) AS u2, sum(u3) AS u3, sum(u4) AS u4,
+	sum(u5) AS u5, sum(u6) AS u6, sum(u7) AS u7, sum(u8) AS u8,
+	sum(u9) AS u9, sum(u10) AS u10, sum(u11) AS u11, sum(u12) AS u12,
+	sum(u13) AS u13, sum(u14) AS u14, sum(u15) AS u15, sum(u16) AS u16,
+	sum(u17) AS u17, sum(u18) AS u18, sum(u19) AS u19
 FROM costs_release
 GROUP BY type_costs;
 
-CREATE OR REPLACE VIEW test_view_gdp AS
-SELECT sum(supply_volume_industries_1) AS supply_volume_industries_1, 
-sum(supply_volume_industries_2) AS supply_volume_industries_2,
-sum(supply_volume_industries_3) AS supply_volume_industries_3,
-sum(supply_volume_industries_4) AS supply_volume_industries_4,
-sum(supply_volume_industries_5) AS supply_volume_industries_5,
-sum(supply_volume_industries_6) AS supply_volume_industries_6,
-sum(supply_volume_industries_7) AS supply_volume_industries_7,
-sum(supply_volume_industries_8) AS supply_volume_industries_8,
-sum(supply_volume_industries_9) AS supply_volume_industries_9,
-sum(supply_volume_industries_10) AS supply_volume_industries_10,
-sum(supply_volume_industries_11) AS supply_volume_industries_11,
-sum(supply_volume_industries_12) AS supply_volume_industries_12,
-sum(supply_volume_industries_13) AS supply_volume_industries_13,
-sum(supply_volume_industries_14) AS supply_volume_industries_14,
-sum(supply_volume_industries_15) AS supply_volume_industries_15,
-sum(supply_volume_industries_16) AS supply_volume_industries_16,
-sum(supply_volume_industries_17) AS supply_volume_industries_17,
-sum(supply_volume_industries_18) AS supply_volume_industries_18,
-sum(supply_volume_industries_19) AS supply_volume_industries_19
-FROM test_view;
-
-SELECT * FROM test_view_gdp;
-
-CREATE OR REPLACE FUNCTION change_Uj(varchar, real) RETURNS varchar AS
+CREATE OR REPLACE FUNCTION change_uj(varchar, varchar, real) RETURNS varchar AS
 $BODY$BEGIN
 EXECUTE '
-UPDATE costs_release                
-SET '||$1||' = '||$1||'/'||$2||';               
+UPDATE '||$1||'                
+SET '||$2||' = '||$2||'/'||$3||';               
 ';
 RETURN 'ok';
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TYPE rs AS (Uj real, Uj_name varchar);
+CREATE TYPE u_sum_name AS (uj real, uj_name varchar);
 
 CREATE OR REPLACE FUNCTION table_indexing() RETURNS varchar AS $$
 DECLARE
-	U1 real = (SELECT supply_volume_industries_1 FROM test_view_gdp);
-	U2 real = (SELECT supply_volume_industries_2 FROM test_view_gdp);
-	U3 real = (SELECT supply_volume_industries_3 FROM test_view_gdp);
-	U4 real = (SELECT supply_volume_industries_4 FROM test_view_gdp);
-	U5 real = (SELECT supply_volume_industries_5 FROM test_view_gdp);
-	U6 real = (SELECT supply_volume_industries_6 FROM test_view_gdp);
-	U7 real = (SELECT supply_volume_industries_7 FROM test_view_gdp);
-	U8 real = (SELECT supply_volume_industries_8 FROM test_view_gdp);
-	U9 real = (SELECT supply_volume_industries_9 FROM test_view_gdp);
-	U10 real = (SELECT supply_volume_industries_10 FROM test_view_gdp);
-	U11 real = (SELECT supply_volume_industries_11 FROM test_view_gdp);
-	U12 real = (SELECT supply_volume_industries_12 FROM test_view_gdp);
-	U13 real = (SELECT supply_volume_industries_13 FROM test_view_gdp);
-	U14 real = (SELECT supply_volume_industries_14 FROM test_view_gdp);
-	U15 real = (SELECT supply_volume_industries_15 FROM test_view_gdp);
-	U16 real = (SELECT supply_volume_industries_16 FROM test_view_gdp);
-	U17 real = (SELECT supply_volume_industries_17 FROM test_view_gdp);
-	U18 real = (SELECT supply_volume_industries_18 FROM test_view_gdp);
-	U19 real = (SELECT supply_volume_industries_19 FROM test_view_gdp);
-	arrayUj rs[] = ARRAY[(U1, 'supply_volume_industries_1'), (U2, 'supply_volume_industries_2'),
-						  (U3, 'supply_volume_industries_3'), (U4, 'supply_volume_industries_4'),
-						  (U5, 'supply_volume_industries_5'), (U6, 'supply_volume_industries_6'),
-						  (U7, 'supply_volume_industries_7'), (U8, 'supply_volume_industries_8'),
-						  (U9, 'supply_volume_industries_9'), (U10, 'supply_volume_industries_10'),
-						  (U11, 'supply_volume_industries_11'), (U12, 'supply_volume_industries_12'),
-						  (U13, 'supply_volume_industries_13'), (U14, 'supply_volume_industries_14'),
-						  (U15, 'supply_volume_industries_15'), (U16, 'supply_volume_industries_16'),
-						  (U17, 'supply_volume_industries_17'), (U18, 'supply_volume_industries_18'),
-						  (U19, 'supply_volume_industries_19')];
-	Uj real;
-	Uj_name text;
+	sum_u1 real = (SELECT sum(u1) FROM costs_release_group);
+	sum_u2 real = (SELECT sum(u2) FROM costs_release_group);
+	sum_u3 real = (SELECT sum(u3) FROM costs_release_group);
+	sum_u4 real = (SELECT sum(u4) FROM costs_release_group);
+	sum_u5 real = (SELECT sum(u5) FROM costs_release_group);
+	sum_u6 real = (SELECT sum(u6) FROM costs_release_group);
+	sum_u7 real = (SELECT sum(u7) FROM costs_release_group);
+	sum_u8 real = (SELECT sum(u8) FROM costs_release_group);
+	sum_u9 real = (SELECT sum(u9) FROM costs_release_group);
+	sum_u10 real = (SELECT sum(u10) FROM costs_release_group);
+	sum_u11 real = (SELECT sum(u11) FROM costs_release_group);
+	sum_u12 real = (SELECT sum(u12) FROM costs_release_group);
+	sum_u13 real = (SELECT sum(u13) FROM costs_release_group);
+	sum_u14 real = (SELECT sum(u14) FROM costs_release_group);
+	sum_u15 real = (SELECT sum(u15) FROM costs_release_group);
+	sum_u16 real = (SELECT sum(u16) FROM costs_release_group);
+	sum_u17 real = (SELECT sum(u17) FROM costs_release_group);
+	sum_u18 real = (SELECT sum(u18) FROM costs_release_group);
+	sum_u19 real = (SELECT sum(u19) FROM costs_release_group);
+	arrayuj u_sum_name[] = ARRAY[(sum_u1, 'u1'), (sum_u2, 'u2'), (sum_u3, 'u3'), (sum_u4, 'u4'),
+		(sum_u5, 'u5'), (sum_u6, 'u6'), (sum_u7, 'u7'), (sum_u8, 'u8'), (sum_u9, 'u9'), 
+		(sum_u10, 'u10'), (sum_u11, 'u11'), (sum_u12, 'u12'), (sum_u13, 'u13'), 
+		(sum_u14, 'u14'), (sum_u15, 'u15'), (sum_u16, 'u16'), (sum_u17, 'u17'), 
+		(sum_u18, 'u18'), (sum_u19, 'u19')];
+	sum_uj real;
+	uj_name text;
 BEGIN
-	FOREACH Uj, Uj_name IN ARRAY arrayUj
+	CREATE TABLE costs_release_index AS TABLE costs_release;
+	FOREACH sum_uj, uj_name IN ARRAY arrayuj
 	LOOP
-		PERFORM change_Uj(Uj_name, Uj);
-	END LOOP;
-	RETURN 'ok';
+		PERFORM change_uj('costs_release_index', uj_name, sum_uj);
+	END LOOP; 
+	RETURN 'Table name: costs_release_index';
 END; 
 $$ LANGUAGE PLPGSQL;
 
 SELECT * FROM table_indexing();
 
-DROP FUNCTION shok_price;
-
 CREATE OR REPLACE FUNCTION shok_price
 (IN type_costs_v varchar, IN id_industries_v integer, IN index_price real)
-RETURNS TABLE(U1 real, U2 real, U3 real, U4 real, U5 real, U6 real, U7 real, U8 real, U9 real, U10 real,
-				   U11 real, U12 real, U13 real, U14 real, U15 real, U16 real, U17 real, U18 real, U19 real) AS $$
+RETURNS TABLE(iu1 real, iu2 real, iu3 real, iu4 real, iu5 real, iu6 real, iu7 real, iu8 real, iu9 real, iu10 real,
+				   iu11 real, iu12 real, iu13 real, iu14 real, iu15 real, iu16 real, iu17 real, iu18 real, iu19 real) AS $$
 BEGIN
 DROP TABLE IF EXISTS temporarily;
-CREATE TABLE temporarily AS TABLE costs_release;
+CREATE TABLE temporarily AS TABLE costs_release_index;
 UPDATE temporarily
-SET supply_volume_industries_1 = supply_volume_industries_1*index_price,
-	supply_volume_industries_2 = supply_volume_industries_2*index_price,
-	supply_volume_industries_3 = supply_volume_industries_3*index_price,
-	supply_volume_industries_4 = supply_volume_industries_4*index_price,
-	supply_volume_industries_5 = supply_volume_industries_5*index_price,
-	supply_volume_industries_6 = supply_volume_industries_6*index_price,
-	supply_volume_industries_7 = supply_volume_industries_7*index_price,
-	supply_volume_industries_8 = supply_volume_industries_8*index_price,
-	supply_volume_industries_9 = supply_volume_industries_9*index_price,
-	supply_volume_industries_10 = supply_volume_industries_10*index_price,
-	supply_volume_industries_11 = supply_volume_industries_11*index_price,
-	supply_volume_industries_12 = supply_volume_industries_12*index_price,
-	supply_volume_industries_13 = supply_volume_industries_13*index_price,
-	supply_volume_industries_14 = supply_volume_industries_14*index_price,
-	supply_volume_industries_15 = supply_volume_industries_15*index_price,
-	supply_volume_industries_16 = supply_volume_industries_16*index_price,
-	supply_volume_industries_17 = supply_volume_industries_17*index_price,
-	supply_volume_industries_18 = supply_volume_industries_18*index_price,
-	supply_volume_industries_19 = supply_volume_industries_19*index_price
+SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
+	u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
+	u7 = u7*index_price, u8 = u8*index_price, u9 = u9*index_price,
+	u10 = u10*index_price, u11 = u11*index_price, u12 = u12*index_price,
+	u13 = u13*index_price, u14 = u14*index_price, u15 = u15*index_price,
+	u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
+	u19 = u19*index_price
 WHERE type_costs = type_costs_v::cost_type AND "id_industries" = id_industries_v;
 RETURN QUERY
-SELECT sum(supply_volume_industries_1) AS supply_volume_industries_1, 
-sum(supply_volume_industries_2) AS supply_volume_industries_2,
-sum(supply_volume_industries_3) AS supply_volume_industries_3,
-sum(supply_volume_industries_4) AS supply_volume_industries_4,
-sum(supply_volume_industries_5) AS supply_volume_industries_5,
-sum(supply_volume_industries_6) AS supply_volume_industries_6,
-sum(supply_volume_industries_7) AS supply_volume_industries_7,
-sum(supply_volume_industries_8) AS supply_volume_industries_8,
-sum(supply_volume_industries_9) AS supply_volume_industries_9,
-sum(supply_volume_industries_10) AS supply_volume_industries_10,
-sum(supply_volume_industries_11) AS supply_volume_industries_11,
-sum(supply_volume_industries_12) AS supply_volume_industries_12,
-sum(supply_volume_industries_13) AS supply_volume_industries_13,
-sum(supply_volume_industries_14) AS supply_volume_industries_14,
-sum(supply_volume_industries_15) AS supply_volume_industries_15,
-sum(supply_volume_industries_16) AS supply_volume_industries_16,
-sum(supply_volume_industries_17) AS supply_volume_industries_17,
-sum(supply_volume_industries_18) AS supply_volume_industries_18,
-sum(supply_volume_industries_19) AS supply_volume_industries_19
+SELECT sum(u1) AS iu1, sum(u2) AS iu2, sum(u3) AS iu3,
+	sum(u4) AS iu4, sum(u5) AS iu5, sum(u6) AS iu6,
+	sum(u7) AS iu7, sum(u8) AS u8, sum(u9) AS u9,
+	sum(u10) AS iu10, sum(u11) AS iu11, sum(u12) AS iu12,
+	sum(u13) AS iu13, sum(u14) AS iu14, sum(u15) AS iu15,
+	sum(u16) AS iu16, sum(u17) AS iu17, sum(u18) AS iu18,
+	sum(u19) AS iu19
 FROM temporarily;
 DROP TABLE IF EXISTS temporarily;
 END;
