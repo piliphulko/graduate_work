@@ -218,3 +218,82 @@ END;
 $$ LANGuAGE PLPGSQL;
 
 SELECT * FROM shok_price('импортные товары/услуги', 0, 1.01);
+
+CREATE TYPE ipk AS ENUM ('веса ipc', 'веса ipi', 'веса ipp');
+
+CREATE TABLE weight_deflator
+(
+	id_industries int NOT NULL,
+	weight_ipk ipk, x real, y real, r real, s real, t real,
+	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
+);
+
+INSERT INTO weight_deflator VALUES
+(1, 'веса ipi', 4119971, 1311398, 19983, 455709, 132803),
+(2, 'веса ipi', 298, 262552, 413, 10271, 42128),
+(3, 'веса ipi', 14040864, 11383346, 195160, 9403415, 7669518),
+(4, 'веса ipi', 2388205, 2762, 0, 0, -118340),
+(5, 'веса ipi', 669834, 0, 2232, 805, 3509),
+(6, 'веса ipi', 138649, 0, 0, 0, -47359),
+(7, 'веса ipi', 511048, 1500, 0, 0, 60409),
+(8, 'веса ipi', 1980268, 137842, 0, 0, -173090),
+(9, 'веса ipi', 775990, 655840, 0, 0, 269430),
+(10, 'веса ipi', 3219019, 92233, 0, 4308, 754335),
+(11, 'веса ipi', 1543044, 0, 0, 0, 893),
+(12, 'веса ipi', 8706189, 32482, 0, 0, -16242),
+(13, 'веса ipi', 275124, 1833, 0, 0, 38152),
+(14, 'веса ipi', 738755, 38726, 0, 0, 39814),
+(15, 'веса ipi', 902595, 0, 0, 0, 0),
+(16, 'веса ipi', 996171, 131123, 0, 0, 10969),
+(17, 'веса ipi', 1285098, 10178, 0, 0, 20665),
+(18, 'веса ipi', 1021392, 14771, 0, 1212, -42571),
+(19, 'веса ipi', 932302, 1699, 0, 0, 39518),
+(1, 'веса ipp', 2978854, 531821, 12515, 229898, 51468),
+(2, 'веса ipp', 773664, 207668, 143236, 194251, 118726),
+(3, 'веса ipp', 53373344, 17742028, 1510077, 7352675, 3594290),
+(4, 'веса ipp', 274382, 0, 0, 0, 40085),
+(5, 'веса ipp', 228115, 17472, 3482, 25355, 1495),
+(6, 'веса ipp', 17794293, 2321852, 0, 0, 1795087),
+(7, 'веса ipp', 119568, 0, 0, 0, 16418),
+(8, 'веса ipp', 8092722, 0, 0, 0, 259821),
+(9, 'веса ipp', 341337, 0, 0, 0, 61434),
+(10, 'веса ipp', 7615740, 366787, 0, 0, 112629),
+(11, 'веса ipp', 171958, 0, 0, 0, 1749),
+(12, 'веса ipp', 136958, 0, 0, 0, 11736),
+(13, 'веса ipp', 3342480, 40, 0, 0, 71566),
+(14, 'веса ipp', 262229, 0, 0, 0, 40514),
+(15, 'веса ipp', 24973, 0, 0, 0, 0),
+(16, 'веса ipp', 202751, 0, 0, 0, 208),
+(17, 'веса ipp', 155195, 0, 0, 0, 2699),
+(18, 'веса ipp', 73120, 242, 0, 0, 3400),
+(19, 'веса ipp', 27053, 25, 0, 0, 3093);
+
+CREATE OR REPLACE FUNCTION take_ipc_weight(integer, varchar) RETURNS real AS $$
+	SELECT u1 + u2 + u3 + u4 + u5 + u6 + u7 + u8 + u9 + 
+	u10 + u11 + u12 + u13 + u14 + u15 + u16 + u17 + u18 + u19
+	FROM costs_release
+	WHERE "id_industries" = $1 AND type_costs = $2::cost_type;
+$$ LANGUAGE SQL;
+	
+CREATE OR REPLACE FUNCTION insert_ipc_weight_industrie
+(id_industrie integer) RETURNS varchar AS $$
+DECLARE 
+	value_x real = (SELECT take_ipc_weight(id_industrie, 'отечественные товары/услуги'));
+	value_y real = (SELECT take_ipc_weight(id_industrie, 'импортные товары/услуги'));
+	value_r real = (SELECT take_ipc_weight(id_industrie, 'транспортные наценки'));
+	value_s real = (SELECT take_ipc_weight(id_industrie, 'торговые наценки'));
+	value_t real = (SELECT take_ipc_weight(id_industrie, 'налоги'));
+BEGIN
+	INSERT INTO weight_deflator VALUES
+	(id_industrie, 'веса ipc', value_x, value_y, value_r, value_s, value_t);
+RETURN 'ok';
+END;
+$$ LANGUAGE PLPGSQL;
+
+DO $$
+BEGIN
+	FOR i IN 1..19
+	LOOP
+		PERFORM insert_ipc_weight_industrie(i);
+	END LOOP;
+END $$;
