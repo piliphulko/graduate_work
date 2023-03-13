@@ -15,10 +15,10 @@ CREATE TABLE industries (
 CREATE TABLE costs_release (
 	id_industries int NOT NULL,
 	type_costs cost_type, 
-	U1 real, U2 real, U3 real, U4 real, U5 real,
-	U6 real, U7 real, U8 real, U9 real, U10 real,
-	U11 real, U12 real, U13 real, U14 real, U15 real,
-	U16 real, U17 real, U18 real, U19 real,
+	U1 numeric, U2 numeric, U3 numeric, U4 numeric, U5 numeric,
+	U6 numeric, U7 numeric, U8 numeric, U9 numeric, U10 numeric,
+	U11 numeric, U12 numeric, U13 numeric, U14 numeric, U15 numeric,
+	U16 numeric, U17 numeric, U18 numeric, U19 numeric,
 
 	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
 );
@@ -124,7 +124,7 @@ SELECT type_costs,
 FROM costs_release
 GROUP BY type_costs;
 
-CREATE OR REPLACE FUNCTION change_Uj(varchar, varchar, real) RETURNS varchar AS
+CREATE OR REPLACE FUNCTION change_Uj(varchar, varchar, numeric) RETURNS varchar AS
 $BODY$BEGIN
 EXECUTE '
 UPDATE '||$1||'                
@@ -134,35 +134,35 @@ RETURN 'ok';
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
-CREATE TYPE U_sum_name AS (Uj real, Uj_name varchar);
+CREATE TYPE U_sum_name AS (Uj numeric, Uj_name varchar);
 
 CREATE OR REPLACE FUNCTION table_indexing() RETURNS varchar AS $$
 DECLARE
-	sum_U1 real = (SELECT sum(U1) FROM costs_release_group);
-	sum_U2 real = (SELECT sum(U2) FROM costs_release_group);
-	sum_U3 real = (SELECT sum(U3) FROM costs_release_group);
-	sum_U4 real = (SELECT sum(U4) FROM costs_release_group);
-	sum_U5 real = (SELECT sum(U5) FROM costs_release_group);
-	sum_U6 real = (SELECT sum(U6) FROM costs_release_group);
-	sum_U7 real = (SELECT sum(U7) FROM costs_release_group);
-	sum_U8 real = (SELECT sum(U8) FROM costs_release_group);
-	sum_U9 real = (SELECT sum(U9) FROM costs_release_group);
-	sum_U10 real = (SELECT sum(U10) FROM costs_release_group);
-	sum_U11 real = (SELECT sum(U11) FROM costs_release_group);
-	sum_U12 real = (SELECT sum(U12) FROM costs_release_group);
-	sum_U13 real = (SELECT sum(U13) FROM costs_release_group);
-	sum_U14 real = (SELECT sum(U14) FROM costs_release_group);
-	sum_U15 real = (SELECT sum(U15) FROM costs_release_group);
-	sum_U16 real = (SELECT sum(U16) FROM costs_release_group);
-	sum_U17 real = (SELECT sum(U17) FROM costs_release_group);
-	sum_U18 real = (SELECT sum(U18) FROM costs_release_group);
-	sum_U19 real = (SELECT sum(U19) FROM costs_release_group);
+	sum_U1 numeric = (SELECT sum(U1) FROM costs_release_group);
+	sum_U2 numeric = (SELECT sum(U2) FROM costs_release_group);
+	sum_U3 numeric = (SELECT sum(U3) FROM costs_release_group);
+	sum_U4 numeric = (SELECT sum(U4) FROM costs_release_group);
+	sum_U5 numeric = (SELECT sum(U5) FROM costs_release_group);
+	sum_U6 numeric = (SELECT sum(U6) FROM costs_release_group);
+	sum_U7 numeric = (SELECT sum(U7) FROM costs_release_group);
+	sum_U8 numeric = (SELECT sum(U8) FROM costs_release_group);
+	sum_U9 numeric = (SELECT sum(U9) FROM costs_release_group);
+	sum_U10 numeric = (SELECT sum(U10) FROM costs_release_group);
+	sum_U11 numeric = (SELECT sum(U11) FROM costs_release_group);
+	sum_U12 numeric = (SELECT sum(U12) FROM costs_release_group);
+	sum_U13 numeric = (SELECT sum(U13) FROM costs_release_group);
+	sum_U14 numeric = (SELECT sum(U14) FROM costs_release_group);
+	sum_U15 numeric = (SELECT sum(U15) FROM costs_release_group);
+	sum_U16 numeric = (SELECT sum(U16) FROM costs_release_group);
+	sum_U17 numeric = (SELECT sum(U17) FROM costs_release_group);
+	sum_U18 numeric = (SELECT sum(U18) FROM costs_release_group);
+	sum_U19 numeric = (SELECT sum(U19) FROM costs_release_group);
 	arrayUj U_sum_name[] = ARRAY[(sum_U1, 'U1'), (sum_U2, 'U2'), (sum_U3, 'U3'), (sum_U4, 'U4'),
 		(sum_U5, 'U5'), (sum_U6, 'U6'), (sum_U7, 'U7'), (sum_U8, 'U8'), (sum_U9, 'U9'), 
 		(sum_U10, 'U10'), (sum_U11, 'U11'), (sum_U12, 'U12'), (sum_U13, 'U13'), 
 		(sum_U14, 'U14'), (sum_U15, 'U15'), (sum_U16, 'U16'), (sum_U17, 'U17'), 
 		(sum_U18, 'U18'), (sum_U19, 'U19')];
-	sum_Uj real;
+	sum_Uj numeric;
 	Uj_name text;
 BEGIN
 	CREATE TABLE costs_release_index AS TABLE costs_release;
@@ -177,9 +177,9 @@ $$ LANGUAGE PLPGSQL;
 SELECT * FROM table_indexing();
 
 CREATE OR REPLACE FUNCTION shok_price
-(IN type_costs_v varchar, IN id_industries_v integer, IN index_price real)
-RETURNS TABLE(iu1 real, iu2 real, iu3 real, iu4 real, iu5 real, iu6 real, iu7 real, iu8 real, iu9 real, iu10 real,
-				   iu11 real, iu12 real, iu13 real, iu14 real, iu15 real, iu16 real, iu17 real, iu18 real, iu19 real) AS $$
+(IN type_costs_v varchar, IN id_industries_v integer, IN index_price numeric)
+RETURNS TABLE(iu1 numeric, iu2 numeric, iu3 numeric, iu4 numeric, iu5 numeric, iu6 numeric, iu7 numeric, iu8 numeric, iu9 numeric, iu10 numeric,
+				   iu11 numeric, iu12 numeric, iu13 numeric, iu14 numeric, iu15 numeric, iu16 numeric, iu17 numeric, iu18 numeric, iu19 numeric) AS $$
 BEGIN
 DROP TABLE IF EXISTS temporarily;
 CREATE TABLE temporarily AS TABLE costs_release_index;
@@ -226,7 +226,7 @@ CREATE TYPE ipk AS ENUM ('веса ipc', 'веса ipi', 'веса ipp');
 CREATE TABLE weight_deflator
 (
 	id_industries int NOT NULL,
-	weight_ipk ipk, x real, y real, r real, s real, t real,
+	weight_ipk ipk, x numeric, y numeric, r numeric, s numeric, t numeric,
 	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
 );
 
@@ -270,7 +270,7 @@ INSERT INTO weight_deflator VALUES
 (18, 'веса ipp', 73120, 242, 0, 0, 3400),
 (19, 'веса ipp', 27053, 25, 0, 0, 3093);
 
-CREATE OR REPLACE FUNCTION take_ipc_weight(integer, varchar) RETURNS real AS $$
+CREATE OR REPLACE FUNCTION take_ipc_weight(integer, varchar) RETURNS numeric AS $$
 	SELECT u1 + u2 + u3 + u4 + u5 + u6 + u7 + u8 + u9 + 
 	u10 + u11 + u12 + u13 + u14 + u15 + u16 + u17 + u18 + u19
 	FROM costs_release
@@ -282,11 +282,11 @@ SELECT take_ipc_weight(1, 'импортные товары/услуги');
 CREATE OR REPLACE FUNCTION insert_ipc_weight_industrie
 (id_industrie integer) RETURNS varchar AS $$
 DECLARE 
-	value_x real = (SELECT take_ipc_weight(id_industrie, 'отечественные товары/услуги'));
-	value_y real = (SELECT take_ipc_weight(id_industrie, 'импортные товары/услуги'));
-	value_r real = (SELECT take_ipc_weight(id_industrie, 'транспортные наценки'));
-	value_s real = (SELECT take_ipc_weight(id_industrie, 'торговые наценки'));
-	value_t real = (SELECT take_ipc_weight(id_industrie, 'налоги'));
+	value_x numeric = (SELECT take_ipc_weight(id_industrie, 'отечественные товары/услуги'));
+	value_y numeric = (SELECT take_ipc_weight(id_industrie, 'импортные товары/услуги'));
+	value_r numeric = (SELECT take_ipc_weight(id_industrie, 'транспортные наценки'));
+	value_s numeric = (SELECT take_ipc_weight(id_industrie, 'торговые наценки'));
+	value_t numeric = (SELECT take_ipc_weight(id_industrie, 'налоги'));
 BEGIN
 	INSERT INTO weight_deflator VALUES
 	(id_industrie, 'веса ipc', value_x, value_y, value_r, value_s, value_t);
@@ -312,7 +312,7 @@ $$ LANGUAGE PLPGSQL;
 
 SELECT insert_ipc();
 
-CREATE OR REPLACE FUNCTION take_k(ip_k varchar) RETURNS real AS $$
+CREATE OR REPLACE FUNCTION take_k(ip_k varchar) RETURNS numeric AS $$
 SELECT sum(x + y + r + s + t)
 FROM weight_deflator
 WHERE "weight_ipk" = ip_k::ipk;
