@@ -364,3 +364,34 @@ END;
 $$ LANGUAGE PLPGSQL;
 
 SELECT weight_indexing();
+
+CREATE OR REPLACE FUNCTION shok_price_deflator
+(varchar, integer, numeric, varchar)
+RETURNS TABLE(ipk numeric) AS
+$BODY$BEGIN
+	DROP TABLE IF EXISTS temporarily;
+	CREATE TABLE temporarily AS TABLE weight_deflator_index;
+IF $2 = 0 THEN
+	EXECUTE '
+	UPDATE temporarily
+	SET '||$4||' = '||$4||'*'||$3||'
+	WHERE weight_ipk = '''||$1||''';';
+	RETURN QUERY
+	SELECT sum(x+y+r+s+t)
+	FROM temporarily
+	WHERE weight_ipk = $1::ipk;
+ELSE
+	EXECUTE '
+	UPDATE temporarily
+	SET '||$4||' = '||$4||'*'||$3||'
+	WHERE weight_ipk = '''||$1||''' AND "id_industries" = '''||$2||''';';
+	RETURN QUERY
+	SELECT sum(x+y+r+s+t)
+	FROM temporarily
+	WHERE weight_ipk = $1::ipk AND "id_industries" = $2;
+END IF;
+	DROP TABLE IF EXISTS temporarily;
+END;$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
+
+SELECT shok_price_deflator('веса ipc', 0, 2, 't')
