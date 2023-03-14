@@ -388,7 +388,7 @@ ELSE
 	RETURN QUERY
 	SELECT sum(x+y+r+s+t)
 	FROM temporarily
-	WHERE weight_ipk = $1::ipk AND "id_industries" = $2;
+	WHERE weight_ipk = $1::ipk;
 END IF;
 	DROP TABLE IF EXISTS temporarily;
 END;$BODY$
