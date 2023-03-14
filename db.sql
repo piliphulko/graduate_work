@@ -318,7 +318,49 @@ FROM weight_deflator
 WHERE "weight_ipk" = ip_k::ipk;
 $$ LANGUAGE SQL;
 
-SELECT sum(x+y+r+s+t) FROM weight_deflator
+CREATE OR REPLACE FUNCTION change_weight(varchar, varchar, numeric, varchar) RETURNS varchar AS
+$BODY$BEGIN
+IF $4 = 'веса ipc' THEN
+	EXECUTE '
+	UPDATE '||$1||'                
+	SET '||$2||' = '||$2||'/'||$3||'
+	WHERE weight_ipk = ''веса ipc'';';
+	RETURN 'ok';
+ELSEIF $4 = 'веса ipi' THEN
+	EXECUTE '
+	UPDATE '||$1||'                
+	SET '||$2||' = '||$2||'/'||$3||'
+	WHERE weight_ipk = ''веса ipi'';';
+	RETURN 'ok';
+ELSEIF $4 = 'веса ipp' THEN
+	EXECUTE '
+	UPDATE '||$1||'                
+	SET '||$2||' = '||$2||'/'||$3||'
+	WHERE weight_ipk = ''веса ipp'';';
+	RETURN 'ok';
+ELSE
+	RETURN 'error';
+END IF;
+END;$BODY$
+LANGUAGE 'plpgsql' VOLATILE;
 
-SELECT sum(u1 + u2 + u3 + u4 + u5 + u6 + u7 + u8 + u9 + u10 + u11 + u12 + u13 + u14 + u15 + u16 + u17 + u18 + u19) FROM costs_release
-WHERE id_industries BETWEEN 1 AND 19;
+CREATE OR REPLACE FUNCTION weight_indexing() RETURNS varchar AS $$
+DECLARE 
+	total_c numeric = (SELECT take_k('веса ipc'));
+	total_i numeric = (SELECT take_k('веса ipi'));
+	total_p numeric = (SELECT take_k('веса ipp'));
+	array_m varchar[] = ARRAY['x', 'y', 'r', 's', 't'];
+	m_name varchar;
+BEGIN
+	CREATE TABLE weight_deflator_index AS TABLE weight_deflator;
+	FOREACH m_name IN ARRAY array_m
+	LOOP
+		PERFORM change_weight('weight_deflator_index', m_name, total_c, 'веса ipc');
+		PERFORM change_weight('weight_deflator_index', m_name, total_i, 'веса ipi');
+		PERFORM change_weight('weight_deflator_index', m_name, total_p, 'веса ipp');
+	END LOOP;
+	RETURN 'Table name: weight_deflator_index';
+END;
+$$ LANGUAGE PLPGSQL;
+
+SELECT weight_indexing();
