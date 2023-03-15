@@ -126,11 +126,10 @@ GROUP BY type_costs;
 
 CREATE OR REPLACE FUNCTION change_Uj(varchar, varchar, numeric) RETURNS varchar AS
 $BODY$BEGIN
-EXECUTE '
-UPDATE '||$1||'                
-SET '||$2||' = '||$2||'/'||$3||';               
-';
-RETURN 'ok';
+	EXECUTE '
+	UPDATE '||$1||'                
+	SET '||$2||' = '||$2||'/'||$3||';';
+	RETURN 'ok';
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
@@ -174,101 +173,96 @@ BEGIN
 END; 
 $$ LANGUAGE PLPGSQL;
 
-SELECT * FROM table_indexing();
+SELECT table_indexing();
 
-CREATE OR REPLACE FUNCTION shok_price
+CREATE OR REPLACE FUNCTION shok_price_industry
 (IN type_costs_v varchar, IN id_industries_v integer, IN index_price numeric)
 RETURNS TABLE(iu1 numeric, iu2 numeric, iu3 numeric, iu4 numeric, iu5 numeric, iu6 numeric, iu7 numeric, iu8 numeric, iu9 numeric, iu10 numeric,
 				   iu11 numeric, iu12 numeric, iu13 numeric, iu14 numeric, iu15 numeric, iu16 numeric, iu17 numeric, iu18 numeric, iu19 numeric) AS $$
 BEGIN
-DROP TABLE IF EXISTS temporarily;
-CREATE TABLE temporarily AS TABLE costs_release_index;
-IF id_industries_v = 0 THEN
-UPDATE temporarily
-SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
-	u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
-	u7 = u7*index_price, u8 = u8*index_price, u9 = u9*index_price,
-	u10 = u10*index_price, u11 = u11*index_price, u12 = u12*index_price,
-	u13 = u13*index_price, u14 = u14*index_price, u15 = u15*index_price,
-	u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
-	u19 = u19*index_price
-WHERE type_costs = type_costs_v::cost_type;
+	DROP TABLE IF EXISTS temporarily;
+	CREATE TABLE temporarily AS TABLE costs_release_index;
+IF id_industries_v = 0 THEN -- 0 it's all industries
+	UPDATE temporarily
+	SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
+		u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
+		u7 = u7*index_price, u8 = u8*index_price, u9 = u9*index_price,
+		u10 = u10*index_price, u11 = u11*index_price, u12 = u12*index_price,
+		u13 = u13*index_price, u14 = u14*index_price, u15 = u15*index_price,
+		u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
+		u19 = u19*index_price
+	WHERE type_costs = type_costs_v::cost_type;
 ELSE
-UPDATE temporarily
-SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
-	u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
-	u7 = u7*index_price, u8 = u8*index_price, u9 = u9*index_price,
-	u10 = u10*index_price, u11 = u11*index_price, u12 = u12*index_price,
-	u13 = u13*index_price, u14 = u14*index_price, u15 = u15*index_price,
-	u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
-	u19 = u19*index_price
-WHERE type_costs = type_costs_v::cost_type AND "id_industries" = id_industries_v;
+	UPDATE temporarily
+	SET u1 = u1*index_price, u2 = u2*index_price, u3 = u3*index_price,
+		u4 = u4*index_price, u5 = u5*index_price, u6 = u6*index_price,
+		u7 = u7*index_price, u8 = u8*index_price, u9 = u9*index_price,
+		u10 = u10*index_price, u11 = u11*index_price, u12 = u12*index_price,
+		u13 = u13*index_price, u14 = u14*index_price, u15 = u15*index_price,
+		u16 = u16*index_price, u17 = u17*index_price, u18 = u18*index_price,
+		u19 = u19*index_price
+	WHERE type_costs = type_costs_v::cost_type AND "id_industries" = id_industries_v;
 END IF;
-RETURN QUERY
-SELECT sum(u1) AS iu1, sum(u2) AS iu2, sum(u3) AS iu3,
-	sum(u4) AS iu4, sum(u5) AS iu5, sum(u6) AS iu6,
-	sum(u7) AS iu7, sum(u8) AS u8, sum(u9) AS u9,
-	sum(u10) AS iu10, sum(u11) AS iu11, sum(u12) AS iu12,
-	sum(u13) AS iu13, sum(u14) AS iu14, sum(u15) AS iu15,
-	sum(u16) AS iu16, sum(u17) AS iu17, sum(u18) AS iu18,
-	sum(u19) AS iu19
-FROM temporarily;
-DROP TABLE IF EXISTS temporarily;
+	RETURN QUERY
+	SELECT sum(u1) AS iu1, sum(u2) AS iu2, sum(u3) AS iu3,
+		sum(u4) AS iu4, sum(u5) AS iu5, sum(u6) AS iu6,
+		sum(u7) AS iu7, sum(u8) AS u8, sum(u9) AS u9,
+		sum(u10) AS iu10, sum(u11) AS iu11, sum(u12) AS iu12,
+		sum(u13) AS iu13, sum(u14) AS iu14, sum(u15) AS iu15,
+		sum(u16) AS iu16, sum(u17) AS iu17, sum(u18) AS iu18,
+		sum(u19) AS iu19
+	FROM temporarily;
+	DROP TABLE IF EXISTS temporarily;
 END;
-$$ LANGuAGE PLPGSQL;
+$$ LANGUAGE PLPGSQL;
 
-SELECT * FROM shok_price('импортные товары/услуги', 0, 1.01);
+CREATE TYPE ipk AS ENUM ('ipp', 'ipc', 'ipi');
 
-DROP TABLE weight_deflator
-
-CREATE TYPE ipk AS ENUM ('веса ipc', 'веса ipi', 'веса ipp');
-
-CREATE TABLE weight_deflator
-(
+CREATE TABLE weight_deflator (
 	id_industries int NOT NULL,
 	weight_ipk ipk, x numeric, y numeric, r numeric, s numeric, t numeric,
 	CONSTRAINT fk_industries FOREIGN KEY (id_industries) REFERENCES industries(id_industries)
 );
 
 INSERT INTO weight_deflator VALUES
-(1, 'веса ipi', 4119971, 1311398, 19983, 455709, 132803),
-(2, 'веса ipi', 298, 262552, 413, 10271, 42128),
-(3, 'веса ipi', 14040864, 11383346, 195160, 9403415, 7669518),
-(4, 'веса ipi', 2388205, 2762, 0, 0, -118340),
-(5, 'веса ipi', 669834, 0, 2232, 805, 3509),
-(6, 'веса ipi', 138649, 0, 0, 0, -47359),
-(7, 'веса ipi', 511048, 1500, 0, 0, 60409),
-(8, 'веса ipi', 1980268, 137842, 0, 0, -173090),
-(9, 'веса ipi', 775990, 655840, 0, 0, 269430),
-(10, 'веса ipi', 3219019, 92233, 0, 4308, 754335),
-(11, 'веса ipi', 1543044, 0, 0, 0, 893),
-(12, 'веса ipi', 8706189, 32482, 0, 0, -16242),
-(13, 'веса ipi', 275124, 1833, 0, 0, 38152),
-(14, 'веса ipi', 738755, 38726, 0, 0, 39814),
-(15, 'веса ipi', 902595, 0, 0, 0, 0),
-(16, 'веса ipi', 996171, 131123, 0, 0, 10969),
-(17, 'веса ipi', 1285098, 10178, 0, 0, 20665),
-(18, 'веса ipi', 1021392, 14771, 0, 1212, -42571),
-(19, 'веса ipi', 932302, 1699, 0, 0, 39518),
-(1, 'веса ipp', 2978854, 531821, 12515, 229898, 51468),
-(2, 'веса ipp', 773664, 207668, 143236, 194251, 118726),
-(3, 'веса ipp', 53373344, 17742028, 1510077, 7352675, 3594290),
-(4, 'веса ipp', 274382, 0, 0, 0, 40085),
-(5, 'веса ipp', 228115, 17472, 3482, 25355, 1495),
-(6, 'веса ipp', 17794293, 2321852, 0, 0, 1795087),
-(7, 'веса ipp', 119568, 0, 0, 0, 16418),
-(8, 'веса ipp', 8092722, 0, 0, 0, 259821),
-(9, 'веса ipp', 341337, 0, 0, 0, 61434),
-(10, 'веса ipp', 7615740, 366787, 0, 0, 112629),
-(11, 'веса ipp', 171958, 0, 0, 0, 1749),
-(12, 'веса ipp', 136958, 0, 0, 0, 11736),
-(13, 'веса ipp', 3342480, 40, 0, 0, 71566),
-(14, 'веса ipp', 262229, 0, 0, 0, 40514),
-(15, 'веса ipp', 24973, 0, 0, 0, 0),
-(16, 'веса ipp', 202751, 0, 0, 0, 208),
-(17, 'веса ipp', 155195, 0, 0, 0, 2699),
-(18, 'веса ipp', 73120, 242, 0, 0, 3400),
-(19, 'веса ipp', 27053, 25, 0, 0, 3093);
+(1, 'ipc', 4119971, 1311398, 19983, 455709, 132803),
+(2, 'ipc', 298, 262552, 413, 10271, 42128),
+(3, 'ipc', 14040864, 11383346, 195160, 9403415, 7669518),
+(4, 'ipc', 2388205, 2762, 0, 0, -118340),
+(5, 'ipc', 669834, 0, 2232, 805, 3509),
+(6, 'ipc', 138649, 0, 0, 0, -47359),
+(7, 'ipc', 511048, 1500, 0, 0, 60409),
+(8, 'ipc', 1980268, 137842, 0, 0, -173090),
+(9, 'ipc', 775990, 655840, 0, 0, 269430),
+(10, 'ipc', 3219019, 92233, 0, 4308, 754335),
+(11, 'ipc', 1543044, 0, 0, 0, 893),
+(12, 'ipc', 8706189, 32482, 0, 0, -16242),
+(13, 'ipc', 275124, 1833, 0, 0, 38152),
+(14, 'ipc', 738755, 38726, 0, 0, 39814),
+(15, 'ipc', 902595, 0, 0, 0, 0),
+(16, 'ipc', 996171, 131123, 0, 0, 10969),
+(17, 'ipc', 1285098, 10178, 0, 0, 20665),
+(18, 'ipc', 1021392, 14771, 0, 1212, -42571),
+(19, 'ipc', 932302, 1699, 0, 0, 39518),
+(1, 'ipi', 2978854, 531821, 12515, 229898, 51468),
+(2, 'ipi', 773664, 207668, 143236, 194251, 118726),
+(3, 'ipi', 53373344, 17742028, 1510077, 7352675, 3594290),
+(4, 'ipi', 274382, 0, 0, 0, 40085),
+(5, 'ipi', 228115, 17472, 3482, 25355, 1495),
+(6, 'ipi', 17794293, 2321852, 0, 0, 1795087),
+(7, 'ipi', 119568, 0, 0, 0, 16418),
+(8, 'ipi', 8092722, 0, 0, 0, 259821),
+(9, 'ipi', 341337, 0, 0, 0, 61434),
+(10, 'ipi', 7615740, 366787, 0, 0, 112629),
+(11, 'ipi', 171958, 0, 0, 0, 1749),
+(12, 'ipi', 136958, 0, 0, 0, 11736),
+(13, 'ipi', 3342480, 40, 0, 0, 71566),
+(14, 'ipi', 262229, 0, 0, 0, 40514),
+(15, 'ipi', 24973, 0, 0, 0, 0),
+(16, 'ipi', 202751, 0, 0, 0, 208),
+(17, 'ipi', 155195, 0, 0, 0, 2699),
+(18, 'ipi', 73120, 242, 0, 0, 3400),
+(19, 'ipi', 27053, 25, 0, 0, 3093);
 
 CREATE OR REPLACE FUNCTION take_ipc_weight(integer, varchar) RETURNS numeric AS $$
 	SELECT u1 + u2 + u3 + u4 + u5 + u6 + u7 + u8 + u9 + 
@@ -276,8 +270,6 @@ CREATE OR REPLACE FUNCTION take_ipc_weight(integer, varchar) RETURNS numeric AS 
 	FROM costs_release
 	WHERE "id_industries" = $1 AND type_costs = $2::cost_type;
 $$ LANGUAGE SQL;
-
-SELECT take_ipc_weight(1, 'импортные товары/услуги');
 	
 CREATE OR REPLACE FUNCTION insert_ipc_weight_industrie
 (id_industrie integer) RETURNS varchar AS $$
@@ -289,7 +281,7 @@ DECLARE
 	value_t numeric = (SELECT take_ipc_weight(id_industrie, 'налоги'));
 BEGIN
 	INSERT INTO weight_deflator VALUES
-	(id_industrie, 'веса ipc', value_x, value_y, value_r, value_s, value_t);
+	(id_industrie, 'ipp', value_x, value_y, value_r, value_s, value_t);
 RETURN 'ok';
 END;
 $$ LANGUAGE PLPGSQL;
@@ -305,38 +297,37 @@ BEGIN
 	UPDATE weight_deflator SET r=0 WHERE r IS NULL;
 	UPDATE weight_deflator SET s=0 WHERE s IS NULL;
 	UPDATE weight_deflator SET t=0 WHERE t IS NULL;
-
-RETURN 'ok';
+	RETURN 'ok';
 END;
 $$ LANGUAGE PLPGSQL;
 
 SELECT insert_ipc();
 
 CREATE OR REPLACE FUNCTION take_k(ip_k varchar) RETURNS numeric AS $$
-SELECT sum(x + y + r + s + t)
-FROM weight_deflator
-WHERE "weight_ipk" = ip_k::ipk;
+	SELECT sum(x + y + r + s + t)
+	FROM weight_deflator
+	WHERE "weight_ipk" = ip_k::ipk;
 $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION change_weight(varchar, varchar, numeric, varchar) RETURNS varchar AS
 $BODY$BEGIN
-IF $4 = 'веса ipc' THEN
+IF $4 = 'ipp' THEN
 	EXECUTE '
 	UPDATE '||$1||'                
 	SET '||$2||' = '||$2||'/'||$3||'
-	WHERE weight_ipk = ''веса ipc'';';
+	WHERE weight_ipk = ''ipp'';';
 	RETURN 'ok';
-ELSEIF $4 = 'веса ipi' THEN
+ELSEIF $4 = 'ipc' THEN
 	EXECUTE '
 	UPDATE '||$1||'                
 	SET '||$2||' = '||$2||'/'||$3||'
-	WHERE weight_ipk = ''веса ipi'';';
+	WHERE weight_ipk = ''ipc'';';
 	RETURN 'ok';
-ELSEIF $4 = 'веса ipp' THEN
+ELSEIF $4 = 'ipi' THEN
 	EXECUTE '
 	UPDATE '||$1||'                
 	SET '||$2||' = '||$2||'/'||$3||'
-	WHERE weight_ipk = ''веса ipp'';';
+	WHERE weight_ipk = ''ipi'';';
 	RETURN 'ok';
 ELSE
 	RETURN 'error';
@@ -346,18 +337,18 @@ LANGUAGE 'plpgsql' VOLATILE;
 
 CREATE OR REPLACE FUNCTION weight_indexing() RETURNS varchar AS $$
 DECLARE 
-	total_c numeric = (SELECT take_k('веса ipc'));
-	total_i numeric = (SELECT take_k('веса ipi'));
-	total_p numeric = (SELECT take_k('веса ipp'));
+	total_p numeric = (SELECT take_k('ipp'));
+	total_c numeric = (SELECT take_k('ipc'));
+	total_i numeric = (SELECT take_k('ipi'));
 	array_m varchar[] = ARRAY['x', 'y', 'r', 's', 't'];
 	m_name varchar;
 BEGIN
 	CREATE TABLE weight_deflator_index AS TABLE weight_deflator;
 	FOREACH m_name IN ARRAY array_m
 	LOOP
-		PERFORM change_weight('weight_deflator_index', m_name, total_c, 'веса ipc');
-		PERFORM change_weight('weight_deflator_index', m_name, total_i, 'веса ipi');
-		PERFORM change_weight('weight_deflator_index', m_name, total_p, 'веса ipp');
+		PERFORM change_weight('weight_deflator_index', m_name, total_p, 'ipp');
+		PERFORM change_weight('weight_deflator_index', m_name, total_c, 'ipc');
+		PERFORM change_weight('weight_deflator_index', m_name, total_i, 'ipi');
 	END LOOP;
 	RETURN 'Table name: weight_deflator_index';
 END;
@@ -371,7 +362,7 @@ RETURNS TABLE(ipk numeric) AS
 $BODY$BEGIN
 	DROP TABLE IF EXISTS temporarily;
 	CREATE TABLE temporarily AS TABLE weight_deflator_index;
-IF $2 = 0 THEN
+IF $2 = 0 THEN -- 0 it's all industries
 	EXECUTE '
 	UPDATE temporarily
 	SET '||$4||' = '||$4||'*'||$3||'
@@ -393,5 +384,3 @@ END IF;
 	DROP TABLE IF EXISTS temporarily;
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
-
-SELECT shok_price_deflator('веса ipc', 0, 2, 't')
