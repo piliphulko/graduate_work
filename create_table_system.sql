@@ -114,16 +114,6 @@ INSERT INTO costs_release VALUES
 (20, 'потребление основного капитала', 1408327, 362795, 3980398, 1343797, 231128, 488081, 897689, 2335327, 150653, 763884, 216416, 3150264, 319447, 193316, 609807, 360432, 598519, 208964, 48574),
 (20, 'чистая прибыль и смешанный доход', 4588241, 528, 12382822, 803716, 103488, 3432577, 4730838, 934853, -50881, 2341066, 1932316, 5130119, 993426, 601341, 359, 338885, 53097, 27302, 392961);
 
-CREATE OR REPLACE VIEW costs_release_group AS
-SELECT type_costs,
-	sum(U1) AS U1, sum(U2) AS U2, sum(U3) AS U3, sum(U4) AS U4,
-	sum(U5) AS U5, sum(U6) AS U6, sum(U7) AS U7, sum(U8) AS U8,
-	sum(U9) AS U9, sum(U10) AS U10, sum(U11) AS U11, sum(U12) AS U12,
-	sum(U13) AS U13, sum(U14) AS U14, sum(U15) AS U15, sum(U16) AS U16,
-	sum(U17) AS U17, sum(U18) AS U18, sum(U19) AS U19
-FROM costs_release
-GROUP BY type_costs;
-
 CREATE OR REPLACE FUNCTION change_Uj(varchar, varchar, numeric) RETURNS varchar AS
 $BODY$BEGIN
 	EXECUTE '
@@ -137,25 +127,25 @@ CREATE TYPE U_sum_name AS (Uj numeric, Uj_name varchar);
 
 CREATE OR REPLACE FUNCTION table_indexing() RETURNS varchar AS $$
 DECLARE
-	sum_U1 numeric = (SELECT sum(U1) FROM costs_release_group);
-	sum_U2 numeric = (SELECT sum(U2) FROM costs_release_group);
-	sum_U3 numeric = (SELECT sum(U3) FROM costs_release_group);
-	sum_U4 numeric = (SELECT sum(U4) FROM costs_release_group);
-	sum_U5 numeric = (SELECT sum(U5) FROM costs_release_group);
-	sum_U6 numeric = (SELECT sum(U6) FROM costs_release_group);
-	sum_U7 numeric = (SELECT sum(U7) FROM costs_release_group);
-	sum_U8 numeric = (SELECT sum(U8) FROM costs_release_group);
-	sum_U9 numeric = (SELECT sum(U9) FROM costs_release_group);
-	sum_U10 numeric = (SELECT sum(U10) FROM costs_release_group);
-	sum_U11 numeric = (SELECT sum(U11) FROM costs_release_group);
-	sum_U12 numeric = (SELECT sum(U12) FROM costs_release_group);
-	sum_U13 numeric = (SELECT sum(U13) FROM costs_release_group);
-	sum_U14 numeric = (SELECT sum(U14) FROM costs_release_group);
-	sum_U15 numeric = (SELECT sum(U15) FROM costs_release_group);
-	sum_U16 numeric = (SELECT sum(U16) FROM costs_release_group);
-	sum_U17 numeric = (SELECT sum(U17) FROM costs_release_group);
-	sum_U18 numeric = (SELECT sum(U18) FROM costs_release_group);
-	sum_U19 numeric = (SELECT sum(U19) FROM costs_release_group);
+	sum_U1 numeric = (SELECT sum(U1) FROM costs_release);
+	sum_U2 numeric = (SELECT sum(U2) FROM costs_release);
+	sum_U3 numeric = (SELECT sum(U3) FROM costs_release);
+	sum_U4 numeric = (SELECT sum(U4) FROM costs_release);
+	sum_U5 numeric = (SELECT sum(U5) FROM costs_release);
+	sum_U6 numeric = (SELECT sum(U6) FROM costs_release);
+	sum_U7 numeric = (SELECT sum(U7) FROM costs_release);
+	sum_U8 numeric = (SELECT sum(U8) FROM costs_release);
+	sum_U9 numeric = (SELECT sum(U9) FROM costs_release);
+	sum_U10 numeric = (SELECT sum(U10) FROM costs_release);
+	sum_U11 numeric = (SELECT sum(U11) FROM costs_release);
+	sum_U12 numeric = (SELECT sum(U12) FROM costs_release);
+	sum_U13 numeric = (SELECT sum(U13) FROM costs_release);
+	sum_U14 numeric = (SELECT sum(U14) FROM costs_release);
+	sum_U15 numeric = (SELECT sum(U15) FROM costs_release);
+	sum_U16 numeric = (SELECT sum(U16) FROM costs_release);
+	sum_U17 numeric = (SELECT sum(U17) FROM costs_release);
+	sum_U18 numeric = (SELECT sum(U18) FROM costs_release);
+	sum_U19 numeric = (SELECT sum(U19) FROM costs_release);
 	arrayUj U_sum_name[] = ARRAY[(sum_U1, 'U1'), (sum_U2, 'U2'), (sum_U3, 'U3'), (sum_U4, 'U4'),
 		(sum_U5, 'U5'), (sum_U6, 'U6'), (sum_U7, 'U7'), (sum_U8, 'U8'), (sum_U9, 'U9'), 
 		(sum_U10, 'U10'), (sum_U11, 'U11'), (sum_U12, 'U12'), (sum_U13, 'U13'), 
@@ -311,27 +301,11 @@ $$ LANGUAGE SQL;
 
 CREATE OR REPLACE FUNCTION change_weight(varchar, varchar, numeric, varchar) RETURNS varchar AS
 $BODY$BEGIN
-IF $4 = 'ipp' THEN
 	EXECUTE '
 	UPDATE '||$1||'                
 	SET '||$2||' = '||$2||'/'||$3||'
-	WHERE weight_ipk = ''ipp'';';
-	RETURN 'ok';
-ELSEIF $4 = 'ipc' THEN
-	EXECUTE '
-	UPDATE '||$1||'                
-	SET '||$2||' = '||$2||'/'||$3||'
-	WHERE weight_ipk = ''ipc'';';
-	RETURN 'ok';
-ELSEIF $4 = 'ipi' THEN
-	EXECUTE '
-	UPDATE '||$1||'                
-	SET '||$2||' = '||$2||'/'||$3||'
-	WHERE weight_ipk = ''ipi'';';
-	RETURN 'ok';
-ELSE
-	RETURN 'error';
-END IF;
+	WHERE weight_ipk = '''||$4||''';';
+RETURN 'ok';
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
 
@@ -384,3 +358,17 @@ END IF;
 	DROP TABLE IF EXISTS temporarily;
 END;$BODY$
 LANGUAGE 'plpgsql' VOLATILE;
+
+CREATE OR REPLACE FUNCTION shok_price_deflator_vektor
+(varchar, numeric, varchar)
+RETURNS SETOF numeric AS $$
+DECLARE
+	v numeric;
+BEGIN
+	FOR i IN 1..19
+	LOOP
+		v = (SELECT shok_price_deflator($1, i, $2, $3));
+		RETURN NEXT v;
+	END LOOP;
+END;
+$$ LANGUAGE PLPGSQL;
